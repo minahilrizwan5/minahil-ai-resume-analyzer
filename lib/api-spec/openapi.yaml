@@ -1,0 +1,103 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: analysis
+    description: Resume analysis operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /analyze:
+    post:
+      operationId: analyzeResume
+      tags: [analysis]
+      summary: Analyze a resume against a job description
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResumeAnalysisInput"
+      responses:
+        "200":
+          description: Structured resume analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResumeAnalysis"
+        "400":
+          description: Invalid input
+        "500":
+          description: Analysis service error
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ResumeAnalysisInput:
+      type: object
+      required:
+        - resume
+        - jobDescription
+      properties:
+        resume:
+          type: string
+          minLength: 40
+        jobDescription:
+          type: string
+          minLength: 40
+    ResumeAnalysis:
+      type: object
+      required:
+        - match_score
+        - strengths
+        - missing_skills
+        - improvement_suggestions
+        - interview_questions
+      properties:
+        match_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        strengths:
+          type: array
+          items:
+            type: string
+        missing_skills:
+          type: array
+          items:
+            type: string
+        improvement_suggestions:
+          type: array
+          items:
+            type: string
+        interview_questions:
+          type: array
+          minItems: 5
+          maxItems: 5
+          items:
+            type: string
+
