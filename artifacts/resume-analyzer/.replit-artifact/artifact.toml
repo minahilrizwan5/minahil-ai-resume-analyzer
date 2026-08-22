@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Minahil — AI Resume Analyzer"
+description = "A polished portfolio-ready web app that compares a resume to a job description using OpenRouter AI and presents a structured match analysis."
+version = "1.0.0"
+id = "artifacts/resume-analyzer"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18646
+
+[services.development]
+run = "pnpm --filter @workspace/resume-analyzer run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/resume-analyzer", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/resume-analyzer/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18646"
+BASE_PATH = "/"
